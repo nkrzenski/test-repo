@@ -4,7 +4,7 @@ const qs = require('qs');
 const axios = require('axios');
 const client_id = '04a301ccb9094be690ff7fea8d0d4db2';
 const client_secret = process.env.CLIENT_SECRET;
-let redirect_uri = process.env.REDIRECT_URI || 'http://localhost:8888/callback';
+const redirect_uri = process.env.REDIRECT_URI || 'http://localhost:8888/callback';
 const stateKey = 'spotify_auth_state';
 const port = 8888;
 
