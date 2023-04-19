@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "build:digitalocean": "npm install --production=false && npm ci",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
