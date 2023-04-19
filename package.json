@@ -2,7 +2,7 @@
   "name": "test-repo",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "app.js",
   "scripts": {
     "build:digitalocean": "npm install --production=false && npm ci",
     "test": "echo \"Error: no test specified\" && exit 1"
