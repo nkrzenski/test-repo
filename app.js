@@ -10,6 +10,8 @@ const port = 8888;
 
 const app = express();
 
+app.use(express.static('static'));
+
 app.get('/login', function (req, res) {
 
     const scope = 'user-read-private user-read-email';
