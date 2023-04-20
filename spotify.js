@@ -42,7 +42,7 @@ class SpotifyClient {
         const options = {
             method: 'GET',
             url: `https://api.spotify.com/v1/users/${user_id}/playlists`,
-            params: { limit: '100' },
+            params: { limit: '50' },
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -66,7 +66,7 @@ class SpotifyClient {
         const options = {
             method: 'GET',
             url: 'https://api.spotify.com/v1/me/tracks',
-            params: { limit: '100' },
+            params: { limit: '50' },
             headers: {
                 Authorization: `Bearer ${token}`
             }
