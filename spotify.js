@@ -9,7 +9,7 @@ class SpotifyClient {
     }
 
     getToken(code) {
-        var authOptions = {
+        const authOptions = {
             method: "post",
             url: 'https://accounts.spotify.com/api/token',
             data: {
@@ -19,7 +19,24 @@ class SpotifyClient {
             },
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + (new Buffer.from(this.client_id + ':' + this.client_secret).toString('base64'))
+                'Authorization': 'Basic ' + (Buffer.from(this.client_id + ':' + this.client_secret).toString('base64'))
+            },
+            json: true
+        };
+        return axios.request(authOptions);
+    }
+
+    refreshToken(refresh_token) {
+        const authOptions = {
+            method: "post",
+            url: 'https://accounts.spotify.com/api/token',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Basic ' + (Buffer.from(this.client_id + ':' + this.client_secret).toString('base64'))
+            },
+            data: {
+                grant_type: 'refresh_token',
+                refresh_token: refresh_token
             },
             json: true
         };

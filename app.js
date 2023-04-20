@@ -51,26 +51,32 @@ app.get('/callback', async function (req, res) {
                 error: 'state_mismatch'
             }));
     } else {
+        res.clearCookie(stateKey);
 
         try {
-
             const tokenResponse = await spotify.getToken(code);
             const profileResponse = await spotify.getMe(tokenResponse.data.access_token);
-            
+
             res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
             res.cookie("refresh_token", tokenResponse.data.refresh_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
             res.cookie("p", Buffer.from(JSON.stringify(profileResponse.data)).toString("base64"), { secure: process.env.NODE_ENV !== "development", httpOnly: true });
             res.redirect('/');
-        } catch(e) {
-            if(e.data.error.status === 401) {
+        } catch (e) {
+            console.log(" callback error", e.response);
+
+            if (e.response.data.error.status === 401) {
                 return res.redirect('/refresh_token');
             }
         }
     }
 });
 
-app.get('/refresh_token', function(req, res ,next) {
-    // TODO: implement
+app.get('/refresh_token', async function (req, res, next) {
+    const refresh_token = req.cookies.refresh_token;
+    const tokenResponse = await spotify.refreshToken(refresh_token);
+
+    res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
+
     return res.status(200).send({});
 });
 
@@ -88,22 +94,30 @@ app.get('/playlists', compression(), async function (req, res, next) {
     if (!query) {
         return res.status(200).send({});
     }
+    try {
+        const profileStr = Buffer.from(JSON.stringify(req.cookies.p), 'base64').toString("utf8");
+        const playlistsResponse = await spotify.getUserPlaylists(JSON.parse(profileStr).id, token);
+        const promises = [
+            spotify.getSavedTracks(token).then(response => ({ id: "liked", name: "Liked Songs", tracks: response.data.items }))
+        ];
 
-    const profileStr = Buffer.from(JSON.stringify(req.cookies.p), 'base64').toString("utf8");
-    const playlistsResponse = await spotify.getUserPlaylists(JSON.parse(profileStr).id, token);
-    const promises = [
-        spotify.getSavedTracks(token).then(response => ({ id: "liked", name: "Liked Songs", tracks: response.data.items }))
-    ];
+        for (let playlist of playlistsResponse.data.items) {
+            promises.push(spotify.getPlaylistItems(playlist.id, token).then(response => ({ id: playlist.id, name: playlist.name, tracks: response.data.items })));
+        }
 
-    for (let playlist of playlistsResponse.data.items) {
-        promises.push(spotify.getPlaylistItems(playlist.id, token).then(response => ({ id: playlist.id, name: playlist.name, tracks: response.data.items })));
+        const playlists = await Promise.all(promises);
+
+        // cache response
+        res.setHeader("cache-control", "public, max-age=31536000, s-maxage=31536000, immutable");
+
+        return res.status(200).send(playlists);
+    } catch (e) {
+        console.log("playlist error", e.response);
+
+        if (e.response.data.error.status === 401) {
+            return res.redirect('/refresh_token');
+        }
     }
-
-    const playlists = await Promise.all(promises);
-
-    res.setHeader("cache-control", "public, max-age=31536000, s-maxage=31536000, immutable")
-
-    return res.status(200).send(playlists);
 });
 
 app.listen(port, () => {

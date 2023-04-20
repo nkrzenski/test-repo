@@ -20,9 +20,11 @@ html::before {
 }
 
 .search-section {
+  width: 95%;
   display: flex;
   justify-content: center;
   margin-top: 1.5rem;
+  margin-left: auto;
 }
 .search-bar {
   font-size: 30px;
@@ -33,7 +35,6 @@ html::before {
   padding: 0.4em;
   box-sizing: border-box;
   border-radius: 0.3em;
-  margin-bottom: 0.4em;
   box-shadow: 0 0 0.1em rgba(255, 255, 255, 0.1),
     inset 0 0.05em 0.3em rgba(0, 0, 0, 0.8);
 }
@@ -88,4 +89,43 @@ html::before {
   font-size: 16px;
   padding-top: 0;
   color: #979797;
+}
+
+.last-updated-text {
+  color: #c6c6c6;
+  font-size: 20px;
+  font-family: Ubuntu;
+}
+
+/* button styles */
+
+.update-btn {
+  margin-left: auto;
+  cursor: pointer;
+  font-size: 24px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #000;
+  text-shadow: 0.02em 0.02em 0.03em rgba(255, 255, 255, 0.2);
+  border-radius: 0.3em;
+  box-sizing: border-box;
+  padding: 0.4em 1em;
+  border: 0.1em solid rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0.07em rgba(255, 255, 255, 0.1),
+    0 0.2em 0.2em -0.15em rgba(0, 0, 0, 0.5), inset 0 0 0.7em rgba(0, 0, 0, 0.2),
+    inset 0 0.1em 0.1em rgba(255, 255, 255, 0.15);
+  transition-property: background-color, color, box-shadow, text-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0, 0.58, 0.58, 1);
+
+  background-color: rgb(72, 72, 72);
+  bottom: 0;
+}
+.update-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0.07em rgba(255, 255, 255, 0.1),
+    0 0.2em 0.2em -0.15em rgba(0, 0, 0, 0.5), inset 0 0 0.7em rgba(0, 0, 0, 0.4),
+    inset 0 0.1em 0.1em rgba(255, 255, 255, 0.1);
+  color: #333;
+
+  background-color: rgb(92, 92, 92);
 }

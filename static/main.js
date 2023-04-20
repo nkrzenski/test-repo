@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!input) return;
 
-            const playlists = await fetch(`/playlists`, { headers: { q: input } }).then(response => response.json());
+            const playlists = await getPlaylists(input, true);
             const found = findInPlaylists(playlists, input);
 
             renderFound(found);
@@ -30,10 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelector(".update-btn").addEventListener('click', async (event) => {
         console.log("clock")
-        await fetch(`/playlists`, { cache: "no-cache", headers: { q: "abc" } }).then(response => response.json());
+        await getPlaylists("abc", false);
     });
 
 });
+
+function getPlaylists(input, shouldCache) {
+    return fetch(`/playlists`, { cache: shouldCache ? "default" : "no-cache", headers: { q: input } }).then(response => response.json());
+}
 
 function renderFound(found) {
     console.log("found", found);
