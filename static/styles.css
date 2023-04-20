@@ -1,0 +1,41 @@
+html {
+  text-rendering: optimizeLegibility;
+  font-variant-ligatures: common-ligatures;
+  font-kerning: normal;
+  background: url("./broken_noise.png");
+}
+
+html::before {
+  content: "";
+  position: fixed;
+  z-index: -2;
+  top: 44%;
+  left: 44%;
+  width: 12%;
+  height: 12%;
+  transform: scale(10);
+  background-color: #ffffff1c;
+}
+
+.search-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+.search-bar {
+  font-size: 30px;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #eee;
+  text-shadow: 0 0.05em rgba(0, 0, 0, 0.5);
+  border: none;
+  padding: 0.4em;
+  box-sizing: border-box;
+  border-radius: 0.3em;
+  margin-bottom: 0.4em;
+  box-shadow: 0 0 0.1em rgba(255, 255, 255, 0.1),
+    inset 0 0.05em 0.3em rgba(0, 0, 0, 0.8);
+}
+.search-bar:focus {
+  box-shadow: 0 0 0.1em rgba(255, 255, 255, 0.3),
+    inset 0 0.05em 0.3em rgba(0, 0, 0, 0.8);
+}

@@ -10,3 +10,17 @@ const hash = location.hash.substring(1).split("&").map(x => {
 });
 
 console.log(hash);
+
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    document.querySelector(".search-section").addEventListener('keypress', (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+
+            const input = event.target.value.trim();
+
+        }
+    });
+
+});

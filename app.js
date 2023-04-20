@@ -1,7 +1,9 @@
 const express = require('express');
 const crypto = require('crypto');
 const qs = require('qs');
-const axios = require('axios');
+const compression = require('compression');
+const cookieParser = require("cookie-parser");
+const SpotifyClient = require('./spotify');
 const client_id = '04a301ccb9094be690ff7fea8d0d4db2';
 const client_secret = process.env.CLIENT_SECRET;
 const redirect_uri = process.env.REDIRECT_URI || 'http://localhost:8888/callback';
@@ -9,12 +11,22 @@ const stateKey = 'spotify_auth_state';
 const port = 8888;
 
 const app = express();
+app.use(cookieParser());
+
+const spotify = new SpotifyClient(client_id, client_secret, redirect_uri);
+
+app.get('/', function (req, res, next) {
+    if (!req.cookies.access_token) {
+        return res.redirect('/login');
+    }
+    next();
+});
 
 app.use(express.static('static'));
 
 app.get('/login', function (req, res) {
 
-    const scope = 'user-read-private user-read-email';
+    const scope = 'user-library-read playlist-read-private playlist-read-collaborative';
     const state = crypto.randomUUID().split('-').join('');
 
     res.cookie(stateKey, state);
@@ -40,26 +52,41 @@ app.get('/callback', async function (req, res) {
                 error: 'state_mismatch'
             }));
     } else {
-        var authOptions = {
-            method: "post",
-            url: 'https://accounts.spotify.com/api/token',
-            data: {
-                code: code,
-                redirect_uri: redirect_uri,
-                grant_type: 'authorization_code'
-            },
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
-            },
-            json: true
-        };
-        const r = await axios(authOptions);
 
-        res.cookie("access_token", r.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
-        res.cookie("refresh_token", r.data.refresh_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
-        res.redirect(`${req.headers.referer}`);
+        const tokenResponse = await spotify.getToken(code);
+        const profileResponse = await spotify.getMe(tokenResponse.data.access_token);
+
+        res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
+        res.cookie("refresh_token", tokenResponse.data.refresh_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
+        res.cookie("p", Buffer.from(JSON.stringify(profileResponse.data)).toString("base64"), { secure: process.env.NODE_ENV !== "development", httpOnly: true });
+        res.redirect('/');
     }
+});
+
+app.get('/playlists', compression(), async function (req, res, next) {
+    const token = req.cookies.access_token;
+    const query = req.query.q;
+
+    if (!req.cookies.p) {
+        return res.redirect('/login');
+    }
+
+    if (!query) {
+        return res.status(200).send({});
+    }
+
+    const profileStr = Buffer.from(JSON.stringify(req.cookies.p), 'base64').toString("utf8");
+    const playlistsResponse = await spotify.getUserPlaylists(JSON.parse(profileStr).id, token);
+    // const playlists = [];
+    const promises = [];
+
+    for (let playlist of playlistsResponse.data.items) {
+        promises.push(spotify.getPlaylistItems(playlist.id, token).then(response => ({ id: response.data.id, name: response.data.name, tracks: response.data.items })));
+    }
+
+    const playlists = await Promise.all(promises);
+
+    return res.status(200).send(playlists);
 });
 
 app.listen(port, () => {
