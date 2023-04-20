@@ -64,6 +64,9 @@ app.get('/callback', async function (req, res) {
 });
 
 app.get('/playlists', compression(), async function (req, res, next) {
+
+    // return res.status(200).send(require("./playlist-mock.json"));
+
     const token = req.cookies.access_token;
     const query = req.query.q;
 
@@ -77,11 +80,12 @@ app.get('/playlists', compression(), async function (req, res, next) {
 
     const profileStr = Buffer.from(JSON.stringify(req.cookies.p), 'base64').toString("utf8");
     const playlistsResponse = await spotify.getUserPlaylists(JSON.parse(profileStr).id, token);
-    // const playlists = [];
-    const promises = [];
+    const promises = [
+        spotify.getSavedTracks(token).then(response => ({ id: "liked", name: "Liked Songs", tracks: response.data.items }))
+    ];
 
     for (let playlist of playlistsResponse.data.items) {
-        promises.push(spotify.getPlaylistItems(playlist.id, token).then(response => ({ id: response.data.id, name: response.data.name, tracks: response.data.items })));
+        promises.push(spotify.getPlaylistItems(playlist.id, token).then(response => ({ id: playlist.id, name: playlist.name, tracks: response.data.items })));
     }
 
     const playlists = await Promise.all(promises);

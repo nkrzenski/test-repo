@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@400&display=swap");
+
 html {
   text-rendering: optimizeLegibility;
   font-variant-ligatures: common-ligatures;
@@ -38,4 +40,52 @@ html::before {
 .search-bar:focus {
   box-shadow: 0 0 0.1em rgba(255, 255, 255, 0.3),
     inset 0 0.05em 0.3em rgba(0, 0, 0, 0.8);
+}
+
+.list-section {
+  width: 95%;
+  margin-top: 3rem;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  color: #c6c6c6;
+  font-family: Ubuntu;
+}
+.found-item {
+  font-size: 30px;
+}
+.found-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+.playlist-name {
+  font-size: 1.5em;
+}
+.album-cover {
+  position: relative;
+}
+.album-cover > svg {
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -50%);
+}
+.track {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+}
+.track-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.artists {
+  font-size: 16px;
+  padding-top: 0;
+  color: #979797;
 }
