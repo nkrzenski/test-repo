@@ -17,12 +17,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.key === "Enter") {
             event.preventDefault();
 
-            const input = event.target.value.trim();
-            const playlists = await fetch(`/playlists?q=${input}`).then(response => response.json());
+            const input = event.target.value.trim().toLowerCase();
+
+            if (!input) return;
+
+            const playlists = await fetch(`/playlists`, { headers: { q: input } }).then(response => response.json());
             const found = findInPlaylists(playlists, input);
 
             renderFound(found);
         }
+    });
+
+    document.querySelector(".update-btn").addEventListener('click', async (event) => {
+        console.log("clock")
+        await fetch(`/playlists`, { cache: "no-cache", headers: { q: "abc" } }).then(response => response.json());
     });
 
 });

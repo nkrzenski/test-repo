@@ -42,7 +42,6 @@ app.get('/login', function (req, res) {
 });
 
 app.get('/callback', async function (req, res) {
-
     const code = req.query.code || null;
     const state = req.query.state || null;
 
@@ -53,14 +52,26 @@ app.get('/callback', async function (req, res) {
             }));
     } else {
 
-        const tokenResponse = await spotify.getToken(code);
-        const profileResponse = await spotify.getMe(tokenResponse.data.access_token);
+        try {
 
-        res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
-        res.cookie("refresh_token", tokenResponse.data.refresh_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
-        res.cookie("p", Buffer.from(JSON.stringify(profileResponse.data)).toString("base64"), { secure: process.env.NODE_ENV !== "development", httpOnly: true });
-        res.redirect('/');
+            const tokenResponse = await spotify.getToken(code);
+            const profileResponse = await spotify.getMe(tokenResponse.data.access_token);
+            
+            res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
+            res.cookie("refresh_token", tokenResponse.data.refresh_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
+            res.cookie("p", Buffer.from(JSON.stringify(profileResponse.data)).toString("base64"), { secure: process.env.NODE_ENV !== "development", httpOnly: true });
+            res.redirect('/');
+        } catch(e) {
+            if(e.data.error.status === 401) {
+                return res.redirect('/refresh_token');
+            }
+        }
     }
+});
+
+app.get('/refresh_token', function(req, res ,next) {
+    // TODO: implement
+    return res.status(200).send({});
 });
 
 app.get('/playlists', compression(), async function (req, res, next) {
@@ -68,7 +79,7 @@ app.get('/playlists', compression(), async function (req, res, next) {
     // return res.status(200).send(require("./playlist-mock.json"));
 
     const token = req.cookies.access_token;
-    const query = req.query.q;
+    const query = req.headers.q;
 
     if (!req.cookies.p) {
         return res.redirect('/login');
@@ -89,6 +100,8 @@ app.get('/playlists', compression(), async function (req, res, next) {
     }
 
     const playlists = await Promise.all(promises);
+
+    res.setHeader("cache-control", "public, max-age=31536000, s-maxage=31536000, immutable")
 
     return res.status(200).send(playlists);
 });
