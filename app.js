@@ -115,7 +115,7 @@ app.get('/playlists', compression(), async function (req, res, next) {
         const playlists = await Promise.all(promises);
 
         // cache response
-        res.setHeader("cache-control", "public, max-age=31536000, s-maxage=31536000, immutable");
+        res.setHeader("cache-control", "private, max-age=31536000");
 
         return res.status(200).send(playlists);
     } catch (e) {
