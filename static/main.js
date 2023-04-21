@@ -37,14 +37,14 @@ async function getPlaylists(input, shouldCache) {
 
 function renderFound(found) {
     const elements = [];
-    const grouped = _.groupBy(Object.values(found), "playlist");
 
-    for (let [key, value] of Object.entries(grouped)) {
+    for (let tracks of Object.values(found)) {
+
         const item = $("<div class=\"found-item\">").html(`
-            <h1 class="playlist-name">${key}</h1>
+            <h1 class="playlist-name">${tracks[0].playlist}</h1>
         `);
 
-        for (let track of value) {
+        for (let track of Object.values(tracks)) {
             const artists = [];
             for (let artist of track.artists) {
                 artists.push(artist.name);
@@ -65,7 +65,9 @@ function renderFound(found) {
         }
 
         elements.push(item);
+
     }
+
     $(".list-section").empty();
     $(".list-section").append(elements);
     resize();
@@ -76,22 +78,27 @@ function findInPlaylists(playlists, input) {
 
     try {
         for (let playlist of playlists) {
+            found[playlist.id] = {};
+
             for (let { track } of playlist.tracks) {
-                if (found[track.id]) continue;
+                if (found[playlist.id][track.id]) continue;
 
                 // check track name
                 if (track.name.toLowerCase().includes(input)) {
-                    found[track.id] = { playlist: playlist.name, ...track };
+                    found[playlist.id][track.id] = { playlist: playlist.name, ...track };
                 } else {
                     // Check artist
                     for (let artist of track.artists) {
                         if (artist.name.toLowerCase().includes(input)) {
-                            found[track.id] = { playlist: playlist.name, ...track };
+                            found[playlist.id][track.id] = { playlist: playlist.name, ...track };
                         }
                     }
                 }
             }
         }
+
+        Object.keys(found).forEach(key => _.isEmpty(found[key]) && delete found[key]);
+        Object.keys(found).forEach(key => found[key] = Object.values(found[key]));
     } catch (e) {
         console.error(e)
     }

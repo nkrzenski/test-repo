@@ -133,7 +133,7 @@ async function getAllTracks(id, token, playlistReq) {
     let response = await playlistReq;
     tracks = tracks.concat(response.data.items);
 
-    for (let i = 0; i < Math.ceil(response.data.total / response.data.items.length); i++) {
+    for (let i = 1; i < Math.ceil(response.data.total / response.data.items.length); i++) {
         promises.push(spotify.getPlaylistItems(id, token, 100 * i));
     }
 
