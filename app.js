@@ -104,7 +104,12 @@ app.get('/playlists', compression(), async function (req, res, next) {
         ];
 
         for (let playlist of playlistsResponse.data.items) {
-            promises.push(spotify.getPlaylistItems(playlist.id, token).then(response => ({ id: playlist.id, name: playlist.name, tracks: response.data.items })));
+            promises.push(
+                getAllTracks(
+                    playlist.id, token,
+                    spotify.getPlaylistItems(playlist.id, token)
+                ).then(tracks => ({ id: playlist.id, name: playlist.name, tracks }))
+            );
         }
 
         const playlists = await Promise.all(promises);
@@ -114,13 +119,32 @@ app.get('/playlists', compression(), async function (req, res, next) {
 
         return res.status(200).send(playlists);
     } catch (e) {
-        console.log("playlist error", e.response);
+        console.log("playlist error", e);
 
         if (e.response.data.error.status === 401) {
             return res.redirect('/refresh_token');
         }
     }
 });
+
+async function getAllTracks(id, token, playlistReq) {
+    const promises = [];
+    let tracks = [];
+    let response = await playlistReq;
+    tracks = tracks.concat(response.data.items);
+
+    for (let i = 0; i < Math.ceil(response.data.total / response.data.items.length); i++) {
+        promises.push(spotify.getPlaylistItems(id, token, 100 * i));
+    }
+
+    const promiseResponses = await Promise.all(promises);
+
+    for (let r of promiseResponses) {
+        tracks = tracks.concat(r.data.items);
+    }
+
+    return tracks;
+}
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

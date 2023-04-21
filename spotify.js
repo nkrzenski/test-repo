@@ -67,11 +67,11 @@ class SpotifyClient {
         return axios.request(options);
     }
 
-    getPlaylistItems(pid, token) {
+    getPlaylistItems(pid, token, offset) {
         const options = {
             method: 'GET',
             url: `https://api.spotify.com/v1/playlists/${pid}/tracks`,
-            params: { fields: 'items' },
+            params: { fields: 'items,next,total', offset },
             headers: {
                 Authorization: `Bearer ${token}`
             }

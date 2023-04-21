@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelector(".refresh-btn").addEventListener('click', async (event) => {
-        await getPlaylists("abc", false);
+        console.log(await getPlaylists("abc", false));
     });
 
 });
@@ -38,8 +38,6 @@ async function getPlaylists(input, shouldCache) {
 function renderFound(found) {
     const elements = [];
     const grouped = _.groupBy(Object.values(found), "playlist");
-
-    console.log(grouped);
 
     for (let [key, value] of Object.entries(grouped)) {
         const item = $("<div class=\"found-item\">").html(`
