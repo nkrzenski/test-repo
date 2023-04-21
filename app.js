@@ -28,6 +28,7 @@ app.get('/login', function (req, res) {
 
     const scope = 'user-library-read playlist-read-private playlist-read-collaborative';
     const state = crypto.randomUUID().split('-').join('');
+    const callback = req.query.cb;
 
     res.cookie(stateKey, state);
 
@@ -36,7 +37,7 @@ app.get('/login', function (req, res) {
             response_type: 'code',
             client_id: client_id,
             scope: scope,
-            redirect_uri: redirect_uri,
+            redirect_uri: redirect_uri + `${callback ? "?cb=" + callback : ""}`,
             state: state
         }));
 });
@@ -44,6 +45,7 @@ app.get('/login', function (req, res) {
 app.get('/callback', async function (req, res) {
     const code = req.query.code || null;
     const state = req.query.state || null;
+    const cb = req.query.cb;
 
     if (state === null) {
         res.redirect('/#' +
@@ -54,13 +56,13 @@ app.get('/callback', async function (req, res) {
         res.clearCookie(stateKey);
 
         try {
-            const tokenResponse = await spotify.getToken(code);
+            const tokenResponse = await spotify.getToken(code, cb);
             const profileResponse = await spotify.getMe(tokenResponse.data.access_token);
 
             res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
             res.cookie("refresh_token", tokenResponse.data.refresh_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
-            res.cookie("p", Buffer.from(JSON.stringify(profileResponse.data)).toString("base64"), { secure: process.env.NODE_ENV !== "development", httpOnly: true });
-            res.redirect('/');
+            res.cookie("p", Buffer.from(JSON.stringify(profileResponse.data)).toString("base64"), { secure: process.env.NODE_ENV !== "development", httpOnly: false });
+            res.redirect((cb ? cb : "") + '/?auth=true');
         } catch (e) {
             console.log(" callback error", e.response);
 

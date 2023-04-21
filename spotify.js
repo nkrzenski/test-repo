@@ -8,13 +8,13 @@ class SpotifyClient {
         this.redirect_uri = redirect_uri
     }
 
-    getToken(code) {
+    getToken(code, cb) {
         const authOptions = {
             method: "post",
             url: 'https://accounts.spotify.com/api/token',
             data: {
                 code: code,
-                redirect_uri: this.redirect_uri,
+                redirect_uri: this.redirect_uri + `${cb ? "?cb="+cb : ""}`,
                 grant_type: 'authorization_code'
             },
             headers: {

@@ -1,5 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@400&display=swap");
 
+:focus {
+  outline: none;
+}
+::-moz-focus-inner {
+  border: 0;
+}
+
 html {
   text-rendering: optimizeLegibility;
   font-variant-ligatures: common-ligatures;
@@ -19,12 +26,19 @@ html::before {
   background-color: #ffffff1c;
 }
 
+body {
+  margin: 0;
+}
+
 .search-section {
   width: 95%;
   display: flex;
+  flex-direction: column;
+  /* align-items: center; */
   justify-content: center;
+  margin: auto;
   margin-top: 1.5rem;
-  margin-left: auto;
+  gap: 1rem;
 }
 .search-bar {
   font-size: 30px;
@@ -45,6 +59,7 @@ html::before {
 
 .list-section {
   width: 95%;
+  margin: auto;
   margin-top: 3rem;
   margin-left: auto;
   display: flex;
@@ -91,10 +106,29 @@ html::before {
   color: #979797;
 }
 
+.update-playlists {
+  display: flex;
+  gap: 1rem;
+}
 .last-updated-text {
-  color: #c6c6c6;
-  font-size: 20px;
+  color: #979797;
+  font-size: 16px;
   font-family: Ubuntu;
+}
+.refresh-btn {
+  font-size: 16px;
+  background: none;
+  border: none;
+  color: #c6c6c6;
+  font-family: Ubuntu;
+  cursor: pointer;
+  font-weight: 600;
+}
+.refresh-btn:hover {
+  color: #6cae73;
+  /* color: #1ed760; */
+  /* scale: 1.05; */
+  transition-duration: 0.1s;
 }
 
 /* button styles */

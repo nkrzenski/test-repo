@@ -1,17 +1,6 @@
-const clientId = "04a301ccb9094be690ff7fea8d0d4db2";
-const scope = "user-read-email";
-const redirectUri = "http://localhost:5500"
-const state = crypto.randomUUID().split('-').join('');
-
-const hash = location.hash.substring(1).split("&").map(x => {
-    const q = x.split('=');
-    return { [q[0]]: q[1] };
-});
-
-console.log(hash);
-
-
 document.addEventListener('DOMContentLoaded', () => {
+
+    getPlaylists("abc", true)
 
     document.querySelector(".search-section").addEventListener('keypress', async (event) => {
         if (event.key === "Enter") {
@@ -28,19 +17,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.querySelector(".update-btn").addEventListener('click', async (event) => {
-        console.log("clock")
+    document.querySelector(".refresh-btn").addEventListener('click', async (event) => {
         await getPlaylists("abc", false);
     });
 
 });
 
-function getPlaylists(input, shouldCache) {
-    return fetch(`/playlists`, { cache: shouldCache ? "default" : "no-cache", headers: { q: input } }).then(response => response.json());
+function resize(selector) {
+    const height = document.querySelector(selector || ".container").scrollHeight;
+    window.parent.postMessage(["setHeight", height + 50], "*");
+}
+
+async function getPlaylists(input, shouldCache) {
+    const response = await fetch(`/playlists`, { cache: shouldCache ? "default" : "no-cache", headers: { q: input } });
+    const date = new Date(response.headers.get("Date"));
+    $(".last-updated-text").text(`Last updated: ${date.toDateString()} at ${date.toLocaleTimeString()}`);
+    return await response.json();
 }
 
 function renderFound(found) {
-    console.log("found", found);
     const elements = [];
     const grouped = _.groupBy(Object.values(found), "playlist");
 
@@ -73,9 +68,9 @@ function renderFound(found) {
 
         elements.push(item);
     }
-    console.log(elements)
     $(".list-section").empty();
     $(".list-section").append(elements);
+    resize();
 }
 
 function findInPlaylists(playlists, input) {
