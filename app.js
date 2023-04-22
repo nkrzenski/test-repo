@@ -62,7 +62,7 @@ app.get('/callback', async function (req, res) {
             res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
             res.cookie("refresh_token", tokenResponse.data.refresh_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
             res.cookie("p", Buffer.from(JSON.stringify(profileResponse.data)).toString("base64"), { secure: process.env.NODE_ENV !== "development", httpOnly: false });
-            res.redirect((cb ? cb : "") + '/?auth=true');
+            res.redirect(cb ? cb + "/?auth=true" : "/");
         } catch (e) {
             console.log(" callback error", e.response);
 
