@@ -45,9 +45,10 @@ app.get('/login', function (req, res) {
 app.get('/callback', async function (req, res) {
     const code = req.query.code || null;
     const state = req.query.state || null;
+    const storedState = req.cookies ? req.cookies[stateKey] : null;
     const cb = req.query.cb;
 
-    if (state === null) {
+    if (state === null || state !== storedState) {
         res.redirect('/#' +
             qs.stringify({
                 error: 'state_mismatch'
