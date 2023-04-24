@@ -21,7 +21,23 @@
     </style>
 
     <script>
+        function resize(selector) {
+            const height = document.querySelector(selector || ".container").scrollHeight;
+            window.parent.postMessage(["setHeight", height + 50], "*");
+        }
+        window.addEventListener("message", (event) => {
+            if (event.data === "disable-scroll") {
+                document.querySelector("body").style.overflow = "hidden";
+            }
+        });
         $(document).ready(() => {
+            const pending = localStorage.getItem("email");
+            if (pending) {
+                $(".text").text(`Pending request: ${pending}`);
+                $(".email-input").hide();
+            }
+
+            resize();
             $(".email-input").on("keypress", (event) => {
                 if (event.key === "Enter") {
                     event.preventDefault();
@@ -38,6 +54,7 @@
                         $(".container").append(`
                             <p>Thank you! Please check again shortly.</p>
                         `);
+                        localStorage.setItem("email", event.target.value.trim());
                     });
                 }
             });
@@ -47,10 +64,12 @@
 
 <body>
     <div class="container">
-        <p>
-            This app is still in development mode. Please enter your email to request access.
+        <p class="text">
+            This app is still in development mode. Please enter the email associated with your Spotify account to
+            request access.
         </p>
         <input class="email-input" type="text" placeholder="email">
+        <div class="pending"></div>
     </div>
 </body>
 
