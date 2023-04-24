@@ -118,16 +118,17 @@ function findInPlaylists(playlists, input) {
             found[playlist.id] = {};
 
             for (let { track } of playlist.tracks) {
-                if (found[playlist.id][track.id]) continue;
+                const id = track.id || track.uri;
+                if (found[playlist.id][id]) continue;
 
                 // check track name
                 if (track.name.toLowerCase().includes(input)) {
-                    found[playlist.id][track.id] = { playlist: playlist.name, ...track };
+                    found[playlist.id][id] = { playlist: playlist.name, ...track };
                 } else {
                     // Check artist
                     for (let artist of track.artists) {
                         if (artist.name.toLowerCase().includes(input)) {
-                            found[playlist.id][track.id] = { playlist: playlist.name, ...track };
+                            found[playlist.id][id] = { playlist: playlist.name, ...track };
                         }
                     }
                 }
