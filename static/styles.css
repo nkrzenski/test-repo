@@ -51,7 +51,7 @@ body {
   margin-top: 1.5rem;
   gap: 1rem;
 }
-.search-bar {
+.search-bar, input[type=text] {
   font-size: 30px;
   background-color: rgba(0, 0, 0, 0.1);
   color: #eee;
@@ -63,7 +63,7 @@ body {
   box-shadow: 0 0 0.1em rgba(255, 255, 255, 0.1),
     inset 0 0.05em 0.3em rgba(0, 0, 0, 0.8);
 }
-.search-bar:focus {
+.search-bar:focus, input[type=text] {
   box-shadow: 0 0 0.1em rgba(255, 255, 255, 0.3),
     inset 0 0.05em 0.3em rgba(0, 0, 0, 0.8);
 }

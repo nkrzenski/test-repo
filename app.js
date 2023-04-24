@@ -124,6 +124,10 @@ app.get('/playlists', compression(), async function (req, res, next) {
     } catch (e) {
         console.log("playlist error", e);
 
+        if (e.response.status === 403) {
+            return res.status(403).send();
+        }
+
         if (e.response.data.error.status === 401) {
             return res.redirect('/refresh_token');
         }

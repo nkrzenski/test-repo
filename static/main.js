@@ -59,6 +59,9 @@ function resize(selector) {
 
 async function getPlaylists(input, shouldCache) {
     const response = await fetch(`/playlists`, { cache: shouldCache ? "default" : "reload", headers: { q: input } });
+    if (response.status === 403) {
+        window.location.href = "/request_access.html";
+    }
     const date = new Date(response.headers.get("Date"));
     $(".last-updated-text").text(`Last updated: ${date.toDateString()} at ${date.toLocaleTimeString()}`);
     return await response.json();
