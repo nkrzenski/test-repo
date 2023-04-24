@@ -7,6 +7,18 @@
   border: 0;
 }
 
+@media only screen and (max-width: 480px) {
+  h1.playlist-name {
+    font-size: 1em;
+  }
+  .track-name {
+    font-size: 1rem;
+  }
+  span.artists {
+    font-size: 0.75rem;
+  }
+}
+
 html {
   text-rendering: optimizeLegibility;
   font-variant-ligatures: common-ligatures;
@@ -34,7 +46,6 @@ body {
   width: 95%;
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
   justify-content: center;
   margin: auto;
   margin-top: 1.5rem;
@@ -57,6 +68,10 @@ body {
     inset 0 0.05em 0.3em rgba(0, 0, 0, 0.8);
 }
 
+div.loading {
+  margin-top: 2rem;
+}
+
 .list-section {
   width: 95%;
   margin: auto;
@@ -68,6 +83,7 @@ body {
   justify-content: center;
   color: #c6c6c6;
   font-family: Ubuntu;
+  display: none;
 }
 .found-item {
   font-size: 30px;
@@ -83,6 +99,9 @@ body {
 }
 .album-cover {
   position: relative;
+}
+.album-cover > img {
+  border-radius: 50%;
 }
 .album-cover > svg {
   position: absolute;
@@ -101,7 +120,7 @@ body {
   justify-content: space-evenly;
 }
 .artists {
-  font-size: 16px;
+  font-size: 1rem;
   padding-top: 0;
   color: #979797;
 }
@@ -109,6 +128,9 @@ body {
 .update-playlists {
   display: flex;
   gap: 1rem;
+}
+.update-playlists.hidden {
+  display: none;
 }
 .last-updated-text {
   color: #979797;
