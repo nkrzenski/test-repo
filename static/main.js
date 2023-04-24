@@ -9,7 +9,7 @@ let isLoading = false;
 document.addEventListener('DOMContentLoaded', () => {
 
     startLoading();
-    getPlaylists("", true).finally(_ => {
+    getPlaylists("abc", true).finally(_ => {
         $(".update-playlists").removeClass("hidden");
         endLoading();
     });
