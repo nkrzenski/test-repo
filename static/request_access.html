@@ -33,6 +33,11 @@
                             "Content-Type": "application/json"
                         },
                         "data": JSON.stringify({ email: event.target.value.trim() })
+                    }).done((response) => {
+                        $(".container").empty();
+                        $(".container").append(`
+                            <p>Thank you! Please check again shortly.</p>
+                        `);
                     });
                 }
             });
