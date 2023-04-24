@@ -2,6 +2,9 @@ window.addEventListener("message", (event) => {
     if (event.data === "disable-scroll") {
         document.querySelector("body").style.overflow = "hidden";
     }
+    if(event.data === "request-access") {
+        window.location.href = "/request_access.html";
+    }
 });
 
 let isLoading = false;
@@ -46,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         startLoading();
         resize();
         const playlists = await getPlaylists("abc", false);
+        console.log(playlists);
         endLoading();
     });
 
@@ -62,6 +66,7 @@ async function getPlaylists(input, shouldCache) {
     if (response.status === 403) {
         window.location.href = "/request_access.html";
     }
+    localStorage.removeItem("email");
     const date = new Date(response.headers.get("Date"));
     $(".last-updated-text").text(`Last updated: ${date.toDateString()} at ${date.toLocaleTimeString()}`);
     return await response.json();
@@ -89,7 +94,7 @@ function renderFound(found) {
                     <svg role="img" height="16" width="16" viewBox="0 0 16 16" class="Svg-ytk21e-0 jAKAlG"><path d="M10 2v9.5a2.75 2.75 0 11-2.75-2.75H8.5V2H10zm-1.5 8.25H7.25A1.25 1.25 0 108.5 11.5v-1.25z"></path></svg>
                 </div>
                 <div class="track-content">
-                    <span class="track-name">${track.name}</span>
+                    <a class="track-name" href="${track.uri}" target="_blank">${track.name}</a>
                     <span class="artists">${artists.join(', ')}</span>
                 </div>
                 </div>

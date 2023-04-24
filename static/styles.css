@@ -101,7 +101,7 @@ div.loading {
   position: relative;
 }
 .album-cover > img {
-  border-radius: 50%;
+  /* border-radius: 50%; */
 }
 .album-cover > svg {
   position: absolute;
@@ -118,6 +118,13 @@ div.loading {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+}
+.track-name {
+  color: #c6c6c6;
+  text-decoration: none;
+}
+.track-name:hover {
+  text-decoration: underline;
 }
 .artists {
   font-size: 1rem;
