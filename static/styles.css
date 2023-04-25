@@ -7,6 +7,12 @@
   border: 0;
 }
 
+@media only screen and (max-width: 400px) {
+  div.album-cover {
+    display: none;
+  }
+}
+
 @media only screen and (max-width: 480px) {
   h1.playlist-name {
     font-size: 1em;
@@ -16,6 +22,10 @@
   }
   span.artists {
     font-size: 0.75rem;
+  }
+  div.open-track-btn > button.open-spotify {
+    padding: 0.5rem 1rem;
+    font-size: 16px;
   }
 }
 
@@ -121,17 +131,10 @@ div.loading {
   flex-direction: column;
   justify-content: space-evenly;
 }
-.track-name {
-  color: #c6c6c6;
-  text-decoration: none;
-}
 .disabled {
   cursor: not-allowed;
   pointer-events: none;
   opacity: 0.5;
-}
-.track-name:hover {
-  text-decoration: underline;
 }
 .artists {
   font-size: 1rem;
