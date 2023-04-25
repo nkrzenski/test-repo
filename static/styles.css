@@ -7,16 +7,57 @@
   border: 0;
 }
 
-@media only screen and (max-width: 400px) {
-  div.album-cover {
-    display: none;
+@media only screen and (min-width: 1700px) {
+  .container {
+    width: 50%;
   }
 }
-
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width: 1700px) {
+  .container {
+    width: 60%;
+  }
+}
+@media only screen and (max-width: 1400px) {
+  .container {
+    width: 70%;
+  }
+}
+@media only screen and (max-width: 1200px) {
+  .container {
+    width: 80%;
+  }
+}
+@media only screen and (max-width: 1000px) {
+  .container {
+    width: 90%;
+  }
+}
+@media only screen and (max-width: 900px) {
+  .container {
+    width: 95%;
+  }
+}
+@media only screen and (max-width: 800px) {
+  .container {
+    width: 100%;
+  }
+}
+@media only screen and (max-width: 600px) {
   h1.playlist-name {
     font-size: 1em;
   }
+  .track-name {
+    font-size: 1.2rem;
+  }
+  span.artists {
+    font-size: 0.9rem;
+  }
+  div.open-track-btn > button.open-spotify {
+    padding: 0.5rem 1rem;
+    font-size: 16px;
+  }
+}
+@media only screen and (max-width: 480px) {
   .track-name {
     font-size: 1rem;
   }
@@ -24,8 +65,16 @@
     font-size: 0.75rem;
   }
   div.open-track-btn > button.open-spotify {
-    padding: 0.5rem 1rem;
-    font-size: 16px;
+    font-size: 12px;
+  }
+  div.open-track-btn > button.open-spotify > img {
+    width: 28px;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  div.album-cover {
+    display: none;
   }
 }
 
@@ -50,6 +99,18 @@ html::before {
 
 body {
   margin: 0;
+}
+
+.container {
+  margin: auto;
+}
+
+.container > h1 {
+  width: 95%;
+  margin: auto;
+  margin-top: 1.5rem;
+  font-family: Ubuntu;
+  color: #c6c6c6;
 }
 
 .search-section {
