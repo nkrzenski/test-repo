@@ -92,7 +92,7 @@ function renderFound(found) {
     for (let tracks of Object.values(found)) {
 
         const item = $("<div class=\"found-item\">").html(`
-            <h1 class="playlist-name">${tracks[0].playlist}</h1>
+            <h2 class="playlist-name">${tracks[0].playlist}</h2>
         `);
 
         for (let track of Object.values(tracks)) {
