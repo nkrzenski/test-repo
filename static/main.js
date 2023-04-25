@@ -3,6 +3,7 @@ window.addEventListener("message", (event) => {
         document.querySelector("body").style.overflow = "hidden";
         document.querySelector(".container").style.width = "100%";
         document.querySelector(".container").style.margin = "unset";
+        document.querySelector(".container > h1").style.display = "none";
     }
     if (event.data === "request-access") {
         window.location.href = "/request_access.html";
