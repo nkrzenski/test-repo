@@ -43,7 +43,7 @@
   }
 }
 @media only screen and (max-width: 600px) {
-  h1.playlist-name {
+  h2.playlist-name {
     font-size: 1em;
   }
   .track-name {
