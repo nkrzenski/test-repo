@@ -8,12 +8,13 @@ const client_id = '04a301ccb9094be690ff7fea8d0d4db2';
 const client_secret = process.env.CLIENT_SECRET;
 const redirect_uri = process.env.REDIRECT_URI || 'http://localhost:8888/callback';
 const stateKey = 'spotify_auth_state';
-const port = 8888;
-
-const app = express();
-app.use(cookieParser());
+const port = process.env.PORT || 8888;
 
 const spotify = new SpotifyClient(client_id, client_secret, redirect_uri);
+const app = express();
+
+app.use(cookieParser());
+
 
 app.get('/', function (req, res, next) {
     if (req.headers['sec-fetch-dest'] !== 'iframe' && !req.cookies.access_token) {
@@ -24,25 +25,13 @@ app.get('/', function (req, res, next) {
 
 app.use(express.static('static'));
 
-app.get('/login', function (req, res) {
+app.get('/login', loginHandler);
+app.get('/callback', callbackHandler);
+app.get('/refresh_token', refreshTokenHandler);
+app.get('/playlists', compression(), playlistsHandler);
 
-    const scope = 'user-library-read playlist-read-private playlist-read-collaborative';
-    const state = crypto.randomUUID().split('-').join('');
-    const callback = req.query.cb;
 
-    res.cookie(stateKey, state);
-
-    res.redirect('https://accounts.spotify.com/authorize?' +
-        qs.stringify({
-            response_type: 'code',
-            client_id: client_id,
-            scope: scope,
-            redirect_uri: redirect_uri + `${callback ? "?cb=" + callback : ""}`,
-            state: state
-        }));
-});
-
-app.get('/callback', async function (req, res) {
+async function callbackHandler(req, res) {
     const code = req.query.code || null;
     const state = req.query.state || null;
     const storedState = req.cookies ? req.cookies[stateKey] : null;
@@ -80,18 +69,27 @@ app.get('/callback', async function (req, res) {
             }
         }
     }
-});
+}
 
-app.get('/refresh_token', async function (req, res, next) {
-    const refresh_token = req.cookies.refresh_token;
-    const tokenResponse = await spotify.refreshToken(refresh_token);
+function loginHandler(req, res) {
 
-    res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
+    const scope = 'user-library-read playlist-read-private playlist-read-collaborative';
+    const state = crypto.randomUUID().split('-').join('');
+    const callback = req.query.cb;
 
-    return res.status(200).send({});
-});
+    res.cookie(stateKey, state);
 
-app.get('/playlists', compression(), async function (req, res, next) {
+    res.redirect('https://accounts.spotify.com/authorize?' +
+        qs.stringify({
+            response_type: 'code',
+            client_id: client_id,
+            scope: scope,
+            redirect_uri: redirect_uri + `${callback ? "?cb=" + callback : ""}`,
+            state: state
+        }));
+}
+
+async function playlistsHandler(req, res, next) {
 
     const token = req.cookies.access_token;
     const query = req.headers.q;
@@ -136,7 +134,16 @@ app.get('/playlists', compression(), async function (req, res, next) {
             return res.redirect('/refresh_token');
         }
     }
-});
+}
+
+async function refreshTokenHandler(req, res, next) {
+    const refresh_token = req.cookies.refresh_token;
+    const tokenResponse = await spotify.refreshToken(refresh_token);
+
+    res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
+
+    return res.status(200).send({});
+}
 
 async function getAllTracks(id, token, playlistReq) {
     const promises = [];
@@ -158,5 +165,5 @@ async function getAllTracks(id, token, playlistReq) {
 }
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+    console.log(`App listening on port ${port}`)
+});
