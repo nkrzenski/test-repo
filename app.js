@@ -31,7 +31,7 @@ app.get('/refresh_token', refreshTokenHandler);
 app.get('/playlists', compression(), playlistsHandler);
 
 
-async function callbackHandler(req, res) {
+async function callbackHandler(req, res, next, refreshAttempt = false) {
     const code = req.query.code || null;
     const state = req.query.state || null;
     const storedState = req.cookies ? req.cookies[stateKey] : null;
@@ -64,8 +64,9 @@ async function callbackHandler(req, res) {
                 return res.redirect(cb ? cb + "/?auth=false" : "/request_access.html");
             }
 
-            if (e.response.data.error && e.response.data.error.status === 401) {
-                return res.redirect('/refresh_token');
+            if (e.response.data.error && e.response.data.error.status === 401 && !refreshAttempt) {
+                await refreshTokenHandler(req, res, next)
+                await callbackHandler(req, res, next, true);
             }
         }
     }
@@ -89,8 +90,8 @@ function loginHandler(req, res) {
         }));
 }
 
-async function playlistsHandler(req, res, next) {
-
+async function playlistsHandler(req, res, next, refreshAttempt = false) {
+    
     const token = req.cookies.access_token;
     const query = req.headers.q;
 
@@ -130,8 +131,9 @@ async function playlistsHandler(req, res, next) {
             return res.status(403).send();
         }
 
-        if (e.response.data.error && e.response.data.error.status === 401) {
-            return res.redirect('/refresh_token');
+        if (e.response.data.error && e.response.data.error.status === 401 && !refreshAttempt) {
+            await refreshTokenHandler(req, res, next)
+            await playlistsHandler(req, res, next, true);
         }
     }
 }
@@ -141,8 +143,9 @@ async function refreshTokenHandler(req, res, next) {
     const tokenResponse = await spotify.refreshToken(refresh_token);
 
     res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
+    req.cookies.access_token = tokenResponse.data.access_token;
 
-    return res.status(200).send({});
+    return;
 }
 
 async function getAllTracks(id, token, playlistReq) {
