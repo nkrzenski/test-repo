@@ -48,6 +48,7 @@ async function callbackHandler(req, res, next, refreshAttempt = false) {
         try {
             const tokenResponse = await spotify.getToken(code, cb);
             const profileResponse = await spotify.getMe(tokenResponse.data.access_token);
+            console.log("login", profileResponse.data);
 
             res.cookie("access_token", tokenResponse.data.access_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
             res.cookie("refresh_token", tokenResponse.data.refresh_token, { secure: process.env.NODE_ENV !== "development", httpOnly: true });
