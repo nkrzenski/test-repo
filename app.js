@@ -58,13 +58,14 @@ async function callbackHandler(req, res, next, refreshAttempt = false) {
             });
             res.redirect(cb ? cb + "/?auth=true" : "/");
         } catch (e) {
-            console.log(" callback error", e.response);
+            console.log(" callback error", e.response.status);
 
             if (e.response.status === 403) {
                 return res.redirect(cb ? cb + "/?auth=false" : "/request_access.html");
             }
 
             if (e.response.data.error && e.response.data.error.status === 401 && !refreshAttempt) {
+                console.log("refresh", e.response.config.url);
                 await refreshTokenHandler(req, res, next)
                 await callbackHandler(req, res, next, true);
             }
@@ -125,13 +126,14 @@ async function playlistsHandler(req, res, next, refreshAttempt = false) {
 
         return res.status(200).send(playlists);
     } catch (e) {
-        console.log("playlist error", e);
+        console.log("playlist error", e.response.status);
 
         if (e.response.status === 403) {
             return res.status(403).send();
         }
 
         if (e.response.data.error && e.response.data.error.status === 401 && !refreshAttempt) {
+            console.log("refresh", e.response.config.url);
             await refreshTokenHandler(req, res, next)
             await playlistsHandler(req, res, next, true);
         }
