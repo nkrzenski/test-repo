@@ -76,6 +76,8 @@ async function callbackHandler(req, res, next, refreshAttempt = false) {
 
 function loginHandler(req, res) {
 
+    console.log("redirect", req.headers);
+
     const scope = 'user-library-read playlist-read-private playlist-read-collaborative';
     const state = crypto.randomUUID().split('-').join('');
     const callback = req.query.cb;
